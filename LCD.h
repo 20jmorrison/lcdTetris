@@ -8,6 +8,8 @@ public:
   
   void configure();
   void shiftDown();
+  void shiftLeft();
+  void shiftRight();
 
 private:
 };

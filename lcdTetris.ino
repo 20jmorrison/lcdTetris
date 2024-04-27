@@ -41,15 +41,34 @@ Joystick joystick;
 
 void setup() {
   Serial.begin(BAUD);
-  
+
   lcd.configure();
   joystick.configure();
 }
 
 void loop() {
   DIRECTION currDirection = joystick.getJoystickDirection();
-  joystick.printJoystickDirection(currDirection);
-  delay(1000);
-  lcd.shiftDown();
-}
+  BUTTON currButton = joystick.getJoystickButtons();
 
+  switch (currButton) {
+    case C:
+      {
+        lcd.shiftRight();
+        break;
+      }
+    case Z:
+      {
+        lcd.shiftLeft();
+        break;
+      }
+    default:
+      {
+        break;
+      }
+  }
+
+  if (currDirection == DOWN){
+    lcd.shiftDown();
+  }
+  delay(50);
+}
