@@ -1,9 +1,9 @@
 #include "Joystick.h"
 
-void Joystick::start() {
+void Joystick::configure() {
   nunchuck.begin();
   nunchuck.type = NUNCHUCK;
-  Serial.println("NUNCHUCK CREATED");
+  Serial.println("NUNCHUCK CONFIGURED");
 }
 
 BUTTON Joystick::getJoystickButtons() {

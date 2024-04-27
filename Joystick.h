@@ -22,7 +22,7 @@ private:
 public:
   BUTTON getJoystickButtons();
   DIRECTION getJoystickDirection();
-  void start();
+  void configure();
   void printJoystickButtons(BUTTON button);
   void printJoystickDirection(DIRECTION direction);
 };

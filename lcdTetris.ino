@@ -33,41 +33,24 @@
 #define D6 11
 #define D7 12
 
-#include <LiquidCrystal.h>
-#include <String.h>
 #include "Joystick.h"
+#include "LCD.h"
 
-LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
+LCD lcd(RS, EN, D4, D5, D6, D7);
 Joystick joystick;
-
-
-uint8_t L[8] = {
-  0b00010,
-  0b00010,
-  0b00011,
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00000,
-};
-
 
 void setup() {
   Serial.begin(BAUD);
-
-  lcd.begin(16, 2);
-  lcd.createChar(0, L);
-  lcd.clear();
-  lcd.write((uint8_t)0);
   
-  joystick.start();
+  lcd.configure();
+  joystick.configure();
 }
 
 void loop() {
   DIRECTION currDirection = joystick.getJoystickDirection();
   joystick.printJoystickDirection(currDirection);
   delay(1000);
+
   // shiftChar(L);
   // lcd.createChar(0, L);
   // lcd.clear();
