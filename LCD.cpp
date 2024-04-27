@@ -17,3 +17,12 @@ void LCD::configure() {
   write((uint8_t)0);
   Serial.println("LCD CONFIGURED");
 }
+
+void LCD::shiftDown(){
+  for (int i = 7; i >= 0; i--) {
+    L[i] = (L[i] << 1) | (L[i] >> 4);
+  }
+  createChar(0, L);
+  clear();
+  write((uint8_t)0);
+}

@@ -7,6 +7,7 @@ public:
     : LiquidCrystal(rs, enable, d0, d1, d2, d3){};
   
   void configure();
+  void shiftDown();
 
 private:
 };

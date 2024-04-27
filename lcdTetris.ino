@@ -50,17 +50,6 @@ void loop() {
   DIRECTION currDirection = joystick.getJoystickDirection();
   joystick.printJoystickDirection(currDirection);
   delay(1000);
-
-  // shiftChar(L);
-  // lcd.createChar(0, L);
-  // lcd.clear();
-  // lcd.write((uint8_t)0);
-  //Serial.println("hi");
-  //Serial.println(joystick.getJoystickDirection());
+  lcd.shiftDown();
 }
 
-void shiftChar(uint8_t bits[]) {
-  for (int i = 7; i >= 0; i--) {
-    bits[i] = (bits[i] << 1) | (bits[i] >> 4);
-  }
-}
