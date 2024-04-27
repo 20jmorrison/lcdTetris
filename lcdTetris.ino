@@ -35,7 +35,7 @@
 
 #include <LiquidCrystal.h>
 #include <WiiChuck.h>
-#include "Sprites.h"
+#include <String.h>
 
 LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
 Accessory nunchuck;
@@ -54,22 +54,50 @@ enum BUTTON {
   NONE
 };
 
+
+uint8_t L[8] = {
+  0b00010,
+  0b00010,
+  0b00011,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+};
+
+
 void setup() {
   Serial.begin(BAUD);
 
-  lcd.createChar(0, L);
   lcd.begin(16, 2);
+
+  lcd.createChar(0, L);
+  lcd.clear();
   lcd.write((uint8_t)0);
 
-  nunchuck.begin();
-  nunchuck.type = NUNCHUCK;
+  // nunchuck.begin();
+  // nunchuck.type = NUNCHUCK;
 }
 
 void loop() {
   //BUTTON currButton = getJoystickButtons();
   //DIRECTION currDirection = getJoystickDirection();
 
+  delay(1000);
+  shiftChar(L);
+  lcd.createChar(0, L);
+  lcd.clear();
+  lcd.write((uint8_t)0);
 }
+
+void shiftChar(uint8_t bits[]){
+  for(int i = 7; i >= 0; i--){
+    bits[i] = (bits[i] << 1) | (bits[i] >> 4);
+  }
+
+}
+
 
 
 DIRECTION getJoystickDirection() {
