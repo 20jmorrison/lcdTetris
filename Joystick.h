@@ -1,18 +1,5 @@
 #include <WiiChuck.h>
-
-enum DIRECTION {
-  LEFT,
-  RIGHT,
-  UP,
-  DOWN,
-  CENTER
-};
-
-enum BUTTON {
-  C,
-  Z,
-  NONE
-};
+#include "Enums.h"
 
 class Joystick {
 

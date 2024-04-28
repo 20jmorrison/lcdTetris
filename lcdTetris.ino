@@ -35,9 +35,11 @@
 
 #include "Joystick.h"
 #include "LCD.h"
+#include "Enums.h"
 
 LCD lcd(RS, EN, D4, D5, D6, D7);
 Joystick joystick;
+unsigned long int prevTime = 0;
 
 void setup() {
   Serial.begin(BAUD);
@@ -67,8 +69,10 @@ void loop() {
       }
   }
 
-  if (currDirection == DOWN){
-    lcd.shiftDown();
-  }
+  lcd.rotatePiece(currDirection);
   delay(50);
+  if (millis() - prevTime > 200){
+    lcd.shiftDown();
+    prevTime = millis();
+  }
 }
