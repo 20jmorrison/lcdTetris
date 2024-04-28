@@ -36,43 +36,65 @@
 #include "Joystick.h"
 #include "LCD.h"
 #include "Enums.h"
+#include "protothreads.h"
+
+
 
 LCD lcd(RS, EN, D4, D5, D6, D7);
 Joystick joystick;
-unsigned long int prevTime = 0;
+DIRECTION currDirection;
+BUTTON currButton;
+pt ptMove;
+pt ptJoystick;
+
+int moveThread(struct pt* pt) {
+  PT_BEGIN(pt);
+
+  for (;;) {
+    lcd.shiftDown();
+    PT_SLEEP(pt, 300);
+  }
+  PT_END(pt);
+}
+
+int joystickThread(struct pt* pt) {
+  PT_BEGIN(pt);
+
+  for (;;) {
+    currDirection = joystick.getJoystickDirection();
+    currButton = joystick.getJoystickButtons();
+    switch (currButton) {
+      case C:
+        {
+          lcd.shiftRight();
+          break;
+        }
+      case Z:
+        {
+          lcd.shiftLeft();
+          break;
+        }
+      default:
+        {
+          break;
+        }
+    }
+    lcd.rotatePiece(currDirection);
+    PT_SLEEP(pt, 50);
+  }
+  PT_END(pt);
+}
 
 void setup() {
   Serial.begin(BAUD);
 
   lcd.configure();
   joystick.configure();
+
+  PT_INIT(&ptMove);
 }
 
 void loop() {
-  DIRECTION currDirection = joystick.getJoystickDirection();
-  BUTTON currButton = joystick.getJoystickButtons();
-
-  switch (currButton) {
-    case C:
-      {
-        lcd.shiftRight();
-        break;
-      }
-    case Z:
-      {
-        lcd.shiftLeft();
-        break;
-      }
-    default:
-      {
-        break;
-      }
-  }
-
-  lcd.rotatePiece(currDirection);
-  delay(50);
-  if (millis() - prevTime > 200){
-    lcd.shiftDown();
-    prevTime = millis();
-  }
+  PT_SCHEDULE(moveThread(&ptMove));
+  PT_SCHEDULE(joystickThread(&ptJoystick));
 }
