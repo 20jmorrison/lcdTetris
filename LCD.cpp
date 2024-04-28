@@ -20,7 +20,30 @@ uint8_t rectB[8] = {
   0b00000,
 };
 
+uint8_t rectC[8] = {
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+};
 
+uint8_t rectD[8] = {
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+};
+
+//  A C
+//  B D
 
 void LCD::configure() {
   begin(16, 2);
@@ -31,61 +54,180 @@ void LCD::configure() {
   Serial.println("LCD CONFIGURED");
 }
 
-void LCD::swapRectangles(uint8_t _rectA[], uint8_t _rectB[]){
-  for (int i = 0; i < 8; i++){
+void LCD::swapRectangles(uint8_t _rectA[], uint8_t _rectB[]) {
+  for (int i = 0; i < 8; i++) {
     _rectA[i] = _rectB[i];
     _rectB[i] = 0b00000;
   }
-
 }
 
 void LCD::shiftDown() {
   bool rectAEmpty = true;
+  bool rectCEmpty = true;
   for (int i = 0; i < 8; i++) {
     rectA[i] = (rectA[i] << 1) | (rectB[i] >> 5);
     rectB[i] = (rectB[i] << 1) | (rectA[i] >> 5);
-    if (rectA[i] > 0){
+
+    rectC[i] = (rectC[i] << 1) | (rectD[i] >> 5);
+    rectD[i] = (rectD[i] << 1) | (rectC[i] >> 5);
+
+    if (rectA[i] > 0) {
       rectAEmpty = false;
     }
+    if (rectC[i] > 0) {
+      rectCEmpty = false;
+    }
   }
+
   createChar(0, rectA);
   createChar(1, rectB);
+  createChar(2, rectC);
+  createChar(3, rectD);
+
+  // Print rectA
   clear();
   setCursor(cursorX, cursorY);
   write((uint8_t)0);
+
+  // Print rectB
   cursorX--;
   setCursor(cursorX, cursorY);
   write((uint8_t)1);
   cursorX++;
-  if (rectAEmpty){ // as soon as the top rectangle is empty,
+
+  // print rectC
+  cursorY++;
+  setCursor(cursorX, cursorY);
+  write((uint8_t)2);
+  cursorY--;
+
+  // print rectD
+  cursorX--;
+  cursorY++;
+  setCursor(cursorX, cursorY);
+  write((uint8_t)3);
+  cursorX++;
+  cursorY--;
+
+  if (rectAEmpty && rectCEmpty) {  // as soon as the top rectangle is empty,
     swapRectangles(rectA, rectB);
+    swapRectangles(rectC, rectD);
     cursorX--;
     // swap rectA and rectB
     // decrement cursor x
   }
+
   delay(500);
 }
 
 void LCD::shiftLeft() {
-  uint8_t wrapVal = rectA[0];
-  for (int i = 0; i < 7; i++) {
-    rectA[i] = rectA[i + 1];
+  if (rectA[0] == 0) {             // if the first row of rectA is empty, we have space to shift left
+    uint8_t wrapVal = rectC[0];    // save first row of B to append to A
+    for (int i = 0; i < 7; i++) {  // shift b over
+      rectC[i] = rectC[i + 1];
+    }
+    rectC[7] = 0b00000;            // set last row of b to 0
+    for (int i = 0; i < 7; i++) {  // shift a over
+      rectA[i] = rectA[i + 1];
+    }
+    rectA[7] = wrapVal;
   }
-  rectA[7] = wrapVal;
+
+  if (rectB[0] == 0) {             // if the first row of rectA is empty, we have space to shift left
+    uint8_t wrapVal = rectD[0];    // save first row of B to append to A
+    for (int i = 0; i < 7; i++) {  // shift b over
+      rectD[i] = rectD[i + 1];
+    }
+    rectD[7] = 0b00000;            // set last row of b to 0
+    for (int i = 0; i < 7; i++) {  // shift a over
+      rectB[i] = rectB[i + 1];
+    }
+    rectB[7] = wrapVal;
+  }
+
   createChar(0, rectA);
+  createChar(1, rectB);
+  createChar(2, rectC);
+  createChar(3, rectD);
+
+  // Print rectA
   clear();
-  setCursor(14, 0);
+  setCursor(cursorX, cursorY);
   write((uint8_t)0);
+
+  // Print rectB
+  cursorX--;
+  setCursor(cursorX, cursorY);
+  write((uint8_t)1);
+  cursorX++;
+
+  // print rectC
+  cursorY++;
+  setCursor(cursorX, cursorY);
+  write((uint8_t)2);
+  cursorY--;
+
+  // print rectD
+  cursorX--;
+  cursorY++;
+  setCursor(cursorX, cursorY);
+  write((uint8_t)3);
+  cursorX++;
+  cursorY--;
 }
 
 void LCD::shiftRight() {
-  uint8_t wrapVal = rectA[7];
-  for (int i = 7; i > 0; i--) {
-    rectA[i] = rectA[i - 1];
+  if (rectC[7] == 0) {             // if the last row of rectC is empty, we have space to shift right
+    uint8_t wrapVal = rectA[7];    // save last row of A to append to C
+    for (int i = 7; i > 0; i--) {  // shift A over
+      rectA[i] = rectA[i - 1];
+    }
+    rectA[0] = 0b00000;            // set first row of a to 0
+    for (int i = 7; i > 0; i--) {  // shift c over
+      rectC[i] = rectC[i - 1];
+    }
+    rectC[0] = wrapVal;
   }
-  rectA[0] = wrapVal;
+
+  if (rectD[7] == 0) {             // if the first row of rectA is empty, we have space to shift left
+    uint8_t wrapVal = rectB[7];    // save first row of B to append to A
+    for (int i = 7; i > 0; i--) {  // shift b over
+      rectB[i] = rectB[i - 1];
+    }
+    rectB[0] = 0b00000;            // set last row of b to 0
+    for (int i = 7; i > 0; i--) {  // shift a over
+      rectD[i] = rectD[i - 1];
+    }
+    rectD[0] = wrapVal;
+  }
+
   createChar(0, rectA);
+  createChar(1, rectB);
+  createChar(2, rectC);
+  createChar(3, rectD);
+
+  // Print rectA
   clear();
-  setCursor(14, 0);
+  setCursor(cursorX, cursorY);
   write((uint8_t)0);
+
+  // Print rectB
+  cursorX--;
+  setCursor(cursorX, cursorY);
+  write((uint8_t)1);
+  cursorX++;
+
+  // print rectC
+  cursorY++;
+  setCursor(cursorX, cursorY);
+  write((uint8_t)2);
+  cursorY--;
+
+  // print rectD
+  cursorX--;
+  cursorY++;
+  setCursor(cursorX, cursorY);
+  write((uint8_t)3);
+  cursorX++;
+  cursorY--;
 }
