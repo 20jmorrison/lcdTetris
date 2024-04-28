@@ -12,4 +12,7 @@ public:
   void shiftRight();
 
 private:
+  int cursorX = 14;
+  int cursorY = 0;
+  void swapRectangles(uint8_t _rectA[], uint8_t _rectB[]);
 };
