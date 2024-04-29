@@ -52,7 +52,7 @@ int moveThread(struct pt* pt) {
 
   for (;;) {
     lcd.shiftDown();
-    PT_SLEEP(pt, 300);
+    PT_SLEEP(pt, 1000);
   }
   PT_END(pt);
 }

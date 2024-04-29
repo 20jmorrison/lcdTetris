@@ -48,7 +48,7 @@ uint8_t rectD[8] = {
 
 void LCD::configure() {
   begin(16, 2);
-  setPiece(L_upRight);
+  setPiece(L_0);
   createChar(0, rectA);
   clear();
   setCursor(14, 0);
@@ -76,13 +76,25 @@ void LCD::rotatePiece(DIRECTION direction) {
   switch (direction) {
     case DOWN:
       {
-        setPiece(L_downRight);
+        setPiece(L_0);
         moveToPosition();
         break;
       }
     case UP:
       {
-        setPiece(L_upRight);
+        setPiece(L_180);
+        moveToPosition();
+        break;
+      }
+    case LEFT:
+      {
+        setPiece(L_90);
+        moveToPosition();
+        break;
+      }
+    case RIGHT:
+      {
+        setPiece(L_270);
         moveToPosition();
         break;
       }
@@ -180,8 +192,7 @@ void LCD::moveToPosition() {
 }
 
 void LCD::shiftDown() {
-  bool rectAEmpty = true;
-  bool rectCEmpty = true;
+
   for (int i = 0; i < 8; i++) {
     rectA[i] = (rectA[i] << 1) | (rectB[i] >> 5);
     rectB[i] = (rectB[i] << 1) | (rectA[i] >> 5);
@@ -189,12 +200,6 @@ void LCD::shiftDown() {
     rectC[i] = (rectC[i] << 1) | (rectD[i] >> 5);
     rectD[i] = (rectD[i] << 1) | (rectC[i] >> 5);
 
-    if (rectA[i] > 0) {
-      rectAEmpty = false;
-    }
-    if (rectC[i] > 0) {
-      rectCEmpty = false;
-    }
   }
 
   createChar(0, rectA);
@@ -227,16 +232,20 @@ void LCD::shiftDown() {
   cursorX++;
   cursorY--;
   downShifts++;
-  if (rectAEmpty && rectCEmpty) {  // as soon as the top rectangle is empty,
-    swapRectangles(rectA, rectB);
-    swapRectangles(rectC, rectD);
-    cursorX--;
-    downShifts = 3;
-    // swap rectA and rectB
-    // decrement cursor x
-  }
 
-  delay(500);
+  bool shouldSwitch = false;
+  
+  for(int i = 0; i < 8; i++){
+    if((rectB[i] >> 4) == 1){
+      shouldSwitch = true;
+    }
+  }
+  Serial.println(shouldSwitch);
+  if (shouldSwitch){
+    swapRectangles(rectA, rectB);
+    cursorX--;
+  }
+  
 }
 
 void LCD::shiftLeft() {
