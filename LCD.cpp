@@ -45,56 +45,6 @@ uint8_t rectD[8] = {
 //  rectA rectC
 //  rectB rectD
 
-uint8_t bottomA[8] = {
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00000,
-};
-
-uint8_t bottomB[8] = {
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-};
-
-uint8_t bottomC[8] = {
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00000,
-};
-
-uint8_t bottomD[8] = {
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-};
-
-
-// bottomA  bottomD
-// bottomB  bottomE
-
-
-
 
 void LCD::configure() {
   begin(16, 2);
@@ -104,28 +54,8 @@ void LCD::configure() {
   setCursor(14, 0);
   write((uint8_t)0);
   Serial.println("LCD CONFIGURED");
-  drawBottom();
 }
 
-void LCD::drawBottom() {
-  createChar(4, bottomA);
-  setCursor(1, 0);
-  write((uint8_t)4);
-
-  createChar(5, bottomB);
-  setCursor(0, 0);
-  write((uint8_t)5);
-
-  createChar(6, bottomC);
-  setCursor(1, 1);
-  write((uint8_t)6);
-
-  createChar(7, bottomD);
-  setCursor(0, 1);
-  write((uint8_t)7);
-
-  setCursor(cursorX, cursorY);
-}
 
 void LCD::drawRectangles() {
   createChar(0, rectA);
@@ -265,10 +195,12 @@ void LCD::moveToPosition() {
     }
   }
   drawRectangles();
-  drawBottom();
 }
 
 void LCD::shiftDown() {
+  if (cursorX <= 0){
+    return;
+  }
 
   for (int i = 0; i < 8; i++) {
     rectA[i] = (rectA[i] << 1) | (rectB[i] >> 5);
@@ -295,7 +227,6 @@ void LCD::shiftDown() {
     cursorX--;
     downShifts = 0;
   }
-  drawBottom();
 }
 
 void LCD::shiftLeft() {
@@ -330,7 +261,6 @@ void LCD::shiftLeft() {
   }
 
   drawRectangles();
-  drawBottom();
 }
 
 void LCD::shiftRight() {
@@ -366,5 +296,4 @@ void LCD::shiftRight() {
   }
 
   drawRectangles();
-  drawBottom();
 }

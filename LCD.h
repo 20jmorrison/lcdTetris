@@ -21,7 +21,6 @@ private:
   int downShifts = 0;
   int rightShifts = 0;
   void moveToPosition();
-  void drawBottom();
   void drawRectangles();
 };
 
