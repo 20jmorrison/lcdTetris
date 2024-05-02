@@ -42,9 +42,59 @@ uint8_t rectD[8] = {
   0b00000,
   0b00000,
 };
+//  rectA rectC
+//  rectB rectD
 
-//  A C
-//  B D
+uint8_t bottomA[8] = {
+  0b00000,
+  0b10000,
+  0b01000,
+  0b01100,
+  0b01010,
+  0b01100,
+  0b01000,
+  0b10000,
+};
+
+uint8_t bottomB[8] = {
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+};
+
+uint8_t bottomC[8] = {
+  0b00000,
+  0b00000,
+  0b11111,
+  0b10001,
+  0b10001,
+  0b00000,
+  0b00000,
+  0b00000,
+};
+
+uint8_t bottomD[8] = {
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+};
+
+
+// bottomA  bottomD
+// bottomB  bottomE
+
+
+
 
 void LCD::configure() {
   begin(16, 2);
@@ -57,17 +107,28 @@ void LCD::configure() {
   drawBottom();
 }
 
-void LCD::drawBottom(){
-  createChar(5, bottom_line);
-  setCursor(0,0);
+void LCD::drawBottom() {
+  createChar(4, bottomA);
+  setCursor(1, 0);
+  write((uint8_t)4);
+
+  createChar(5, bottomB);
+  setCursor(0, 0);
   write((uint8_t)5);
-  setCursor(0,1);
-  write((uint8_t)5);
+
+  createChar(6, bottomC);
+  setCursor(1, 1);
+  write((uint8_t)6);
+
+  createChar(7, bottomD);
+  setCursor(0, 1);
+  write((uint8_t)7);
+
   setCursor(cursorX, cursorY);
 }
 
-void LCD::drawRectangles(){
-createChar(0, rectA);
+void LCD::drawRectangles() {
+  createChar(0, rectA);
   createChar(1, rectB);
   createChar(2, rectC);
   createChar(3, rectD);
@@ -215,21 +276,20 @@ void LCD::shiftDown() {
 
     rectC[i] = (rectC[i] << 1) | (rectD[i] >> 5);
     rectD[i] = (rectD[i] << 1) | (rectC[i] >> 5);
-
   }
 
   drawRectangles();
   downShifts++;
 
   bool shouldSwitch = false;
-  
-  for(int i = 0; i < 8; i++){
-    if(((rectB[i] >> 4) == 1) || ((rectD[i] >> 4) == 1)){
+
+  for (int i = 0; i < 8; i++) {
+    if (((rectB[i] >> 4) == 1) || ((rectD[i] >> 4) == 1)) {
       shouldSwitch = true;
     }
   }
   Serial.println(shouldSwitch);
-  if (shouldSwitch){
+  if (shouldSwitch) {
     swapRectangles(rectA, rectB);
     swapRectangles(rectC, rectD);
     cursorX--;
@@ -308,6 +368,3 @@ void LCD::shiftRight() {
   drawRectangles();
   drawBottom();
 }
-
-
-
