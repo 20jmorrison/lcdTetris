@@ -236,14 +236,16 @@ void LCD::shiftDown() {
   bool shouldSwitch = false;
   
   for(int i = 0; i < 8; i++){
-    if((rectB[i] >> 4) == 1){
+    if(((rectB[i] >> 4) == 1) || ((rectD[i] >> 4) == 1)){
       shouldSwitch = true;
     }
   }
   Serial.println(shouldSwitch);
   if (shouldSwitch){
     swapRectangles(rectA, rectB);
+    swapRectangles(rectC, rectD);
     cursorX--;
+    downShifts = 0;
   }
   
 }
