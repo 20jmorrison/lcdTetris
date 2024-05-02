@@ -54,7 +54,50 @@ void LCD::configure() {
   setCursor(14, 0);
   write((uint8_t)0);
   Serial.println("LCD CONFIGURED");
+  drawBottom();
 }
+
+void LCD::drawBottom(){
+  createChar(5, bottom_line);
+  setCursor(0,0);
+  write((uint8_t)5);
+  setCursor(0,1);
+  write((uint8_t)5);
+  setCursor(cursorX, cursorY);
+}
+
+void LCD::drawRectangles(){
+createChar(0, rectA);
+  createChar(1, rectB);
+  createChar(2, rectC);
+  createChar(3, rectD);
+
+  // Print rectA
+  clear();
+  setCursor(cursorX, cursorY);
+  write((uint8_t)0);
+
+  // Print rectB
+  cursorX--;
+  setCursor(cursorX, cursorY);
+  write((uint8_t)1);
+  cursorX++;
+
+  // print rectC
+  cursorY++;
+  setCursor(cursorX, cursorY);
+  write((uint8_t)2);
+  cursorY--;
+
+  // print rectD
+  cursorX--;
+  cursorY++;
+  setCursor(cursorX, cursorY);
+  write((uint8_t)3);
+  cursorX++;
+  cursorY--;
+}
+
 
 void LCD::swapRectangles(uint8_t _rectA[], uint8_t _rectB[]) {
   for (int i = 0; i < 8; i++) {
@@ -160,35 +203,8 @@ void LCD::moveToPosition() {
       rectD[0] = wrapVal;
     }
   }
-  createChar(0, rectA);
-  createChar(1, rectB);
-  createChar(2, rectC);
-  createChar(3, rectD);
-
-  // Print rectA
-  clear();
-  setCursor(cursorX, cursorY);
-  write((uint8_t)0);
-
-  // Print rectB
-  cursorX--;
-  setCursor(cursorX, cursorY);
-  write((uint8_t)1);
-  cursorX++;
-
-  // print rectC
-  cursorY++;
-  setCursor(cursorX, cursorY);
-  write((uint8_t)2);
-  cursorY--;
-
-  // print rectD
-  cursorX--;
-  cursorY++;
-  setCursor(cursorX, cursorY);
-  write((uint8_t)3);
-  cursorX++;
-  cursorY--;
+  drawRectangles();
+  drawBottom();
 }
 
 void LCD::shiftDown() {
@@ -202,35 +218,7 @@ void LCD::shiftDown() {
 
   }
 
-  createChar(0, rectA);
-  createChar(1, rectB);
-  createChar(2, rectC);
-  createChar(3, rectD);
-
-  // Print rectA
-  clear();
-  setCursor(cursorX, cursorY);
-  write((uint8_t)0);
-
-  // Print rectB
-  cursorX--;
-  setCursor(cursorX, cursorY);
-  write((uint8_t)1);
-  cursorX++;
-
-  // print rectC
-  cursorY++;
-  setCursor(cursorX, cursorY);
-  write((uint8_t)2);
-  cursorY--;
-
-  // print rectD
-  cursorX--;
-  cursorY++;
-  setCursor(cursorX, cursorY);
-  write((uint8_t)3);
-  cursorX++;
-  cursorY--;
+  drawRectangles();
   downShifts++;
 
   bool shouldSwitch = false;
@@ -247,7 +235,7 @@ void LCD::shiftDown() {
     cursorX--;
     downShifts = 0;
   }
-  
+  drawBottom();
 }
 
 void LCD::shiftLeft() {
@@ -281,35 +269,8 @@ void LCD::shiftLeft() {
     rightShifts--;
   }
 
-  createChar(0, rectA);
-  createChar(1, rectB);
-  createChar(2, rectC);
-  createChar(3, rectD);
-
-  // Print rectA
-  clear();
-  setCursor(cursorX, cursorY);
-  write((uint8_t)0);
-
-  // Print rectB
-  cursorX--;
-  setCursor(cursorX, cursorY);
-  write((uint8_t)1);
-  cursorX++;
-
-  // print rectC
-  cursorY++;
-  setCursor(cursorX, cursorY);
-  write((uint8_t)2);
-  cursorY--;
-
-  // print rectD
-  cursorX--;
-  cursorY++;
-  setCursor(cursorX, cursorY);
-  write((uint8_t)3);
-  cursorX++;
-  cursorY--;
+  drawRectangles();
+  drawBottom();
 }
 
 void LCD::shiftRight() {
@@ -344,33 +305,9 @@ void LCD::shiftRight() {
     rightShifts++;
   }
 
-  createChar(0, rectA);
-  createChar(1, rectB);
-  createChar(2, rectC);
-  createChar(3, rectD);
-
-  // Print rectA
-  clear();
-  setCursor(cursorX, cursorY);
-  write((uint8_t)0);
-
-  // Print rectB
-  cursorX--;
-  setCursor(cursorX, cursorY);
-  write((uint8_t)1);
-  cursorX++;
-
-  // print rectC
-  cursorY++;
-  setCursor(cursorX, cursorY);
-  write((uint8_t)2);
-  cursorY--;
-
-  // print rectD
-  cursorX--;
-  cursorY++;
-  setCursor(cursorX, cursorY);
-  write((uint8_t)3);
-  cursorX++;
-  cursorY--;
+  drawRectangles();
+  drawBottom();
 }
+
+
+
