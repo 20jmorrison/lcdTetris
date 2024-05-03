@@ -45,13 +45,36 @@ uint8_t rectD[8] = {
 //  rectA rectC
 //  rectB rectD
 
+uint8_t bottomA[8] = {
+  0b01000,
+  0b01000,
+  0b01000,
+  0b01000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+};
+
+uint8_t prevBottomA[8] = {
+  0b01000,
+  0b01000,
+  0b01000,
+  0b01000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+};
+
+
 
 void LCD::configure() {
   begin(16, 2);
   setPiece(L_0);
   createChar(0, rectA);
   clear();
-  setCursor(14, 0);
+  setCursor(cursorX, cursorY);
   write((uint8_t)0);
   Serial.println("LCD CONFIGURED");
 }
@@ -62,6 +85,7 @@ void LCD::drawRectangles() {
   createChar(1, rectB);
   createChar(2, rectC);
   createChar(3, rectD);
+  createChar(4, bottomA);
 
   // Print rectA
   clear();
@@ -87,6 +111,9 @@ void LCD::drawRectangles() {
   write((uint8_t)3);
   cursorX++;
   cursorY--;
+
+  setCursor(0, 0);
+  write((uint8_t)4);
 }
 
 
@@ -197,37 +224,76 @@ void LCD::moveToPosition() {
   drawRectangles();
 }
 
+
+void LCD::reset(){
+  for (int i = 0; i < 8; i++){
+    prevBottomA[i] = bottomA[i];
+    rectA[i] = 0b00000;
+    rectB[i] = 0b00000;
+    rectC[i] = 0b00000;
+    rectD[i] = 0b00000;
+  }
+  cursorX = 4;
+  cursorY = 0;
+  downShifts = 0;
+  rightShifts = 0;
+
+  setPiece(L_0);
+  createChar(0, rectA);
+  clear();
+  setCursor(cursorX, cursorY);
+  write((uint8_t)0);
+  stopPiece = false;
+}
+
+
 void LCD::shiftDown() {
-  if (cursorX <= 0){
-    return;
-  }
+  if (!stopPiece) {
+    for (int i = 0; i < 8; i++) {
+      rectA[i] = (rectA[i] << 1) | (rectB[i] >> 5);
+      rectB[i] = (rectB[i] << 1) | (rectA[i] >> 5);
 
-  for (int i = 0; i < 8; i++) {
-    rectA[i] = (rectA[i] << 1) | (rectB[i] >> 5);
-    rectB[i] = (rectB[i] << 1) | (rectA[i] >> 5);
+      rectC[i] = (rectC[i] << 1) | (rectD[i] >> 5);
+      rectD[i] = (rectD[i] << 1) | (rectC[i] >> 5);
+    }
 
-    rectC[i] = (rectC[i] << 1) | (rectD[i] >> 5);
-    rectD[i] = (rectD[i] << 1) | (rectC[i] >> 5);
-  }
+    if (cursorX == 1) {
+      for (int i = 0; i < 8; i++) {
+        bottomA[i] = prevBottomA[i] | rectB[i];
+        if (((rectB[i] << 1) & prevBottomA[i]) != 0) {  // if we shift rectb down by one, then and it with prevBottomA, we can see if any bits match up. If so, there must be a collision.
+          stopPiece = true;
+        }
+      }
+    }
 
-  drawRectangles();
-  downShifts++;
+    if (stopPiece){
+      reset();
+    }
 
-  bool shouldSwitch = false;
+    drawRectangles();
+    downShifts++;
 
-  for (int i = 0; i < 8; i++) {
-    if (((rectB[i] >> 4) == 1) || ((rectD[i] >> 4) == 1)) {
-      shouldSwitch = true;
+    bool shouldSwitch = false;
+
+    for (int i = 0; i < 8; i++) {
+      if (((rectB[i] >> 4) == 1) || ((rectD[i] >> 4) == 1)) {
+        shouldSwitch = true;
+      }
+    }
+    Serial.println(1 & 8);
+    if (shouldSwitch) {
+      swapRectangles(rectA, rectB);
+      swapRectangles(rectC, rectD);
+      cursorX--;
+      downShifts = 0;
     }
   }
-  Serial.println(shouldSwitch);
-  if (shouldSwitch) {
-    swapRectangles(rectA, rectB);
-    swapRectangles(rectC, rectD);
-    cursorX--;
-    downShifts = 0;
-  }
 }
+
+
+
+
+
 
 void LCD::shiftLeft() {
   bool shiftedLeft = false;

@@ -14,7 +14,7 @@ public:
 
 
 private:
-  int cursorX = 14;
+  int cursorX = 4;
   int cursorY = 0;
   void swapRectangles(uint8_t _rectA[], uint8_t _rectB[]);
   void setPiece(uint8_t _piece[]);
@@ -22,6 +22,8 @@ private:
   int rightShifts = 0;
   void moveToPosition();
   void drawRectangles();
+  bool stopPiece = false;
+  void reset();
 };
 
 
