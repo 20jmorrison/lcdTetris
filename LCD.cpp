@@ -13,11 +13,11 @@
 //               |                 |  | RectB and rectD are then set to all 0's. Finally, we decrement cursorX by 1
 //               |                 |  V in order to move the window down.
 //               |                 |
-//               |                 | 
 //               |                 |
 //               |                 |
 //               |                 |
-//               |                 | 
+//               |                 |
+//               |                 |
 //               |                 |
 //               |                 |
 //               |                 |
@@ -70,10 +70,44 @@ uint8_t rectD[8] = {
   0b00000,
   0b00000,
 };
-//  rectA rectC
-//  rectB rectD
+
+
+
 
 uint8_t bottomA[8] = {
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+};
+
+uint8_t bottomB[8] = {
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+};
+
+uint8_t bottomC[8] = {
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+};
+
+uint8_t bottomD[8] = {
   0b10000,
   0b10000,
   0b10000,
@@ -85,6 +119,39 @@ uint8_t bottomA[8] = {
 };
 
 uint8_t prevBottomA[8] = {
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+};
+
+uint8_t prevBottomB[8] = {
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+};
+
+uint8_t prevBottomC[8] = {
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+};
+
+uint8_t prevBottomD[8] = {
   0b10000,
   0b10000,
   0b10000,
@@ -114,6 +181,9 @@ void LCD::drawRectangles() {
   createChar(2, rectC);
   createChar(3, rectD);
   createChar(4, bottomA);
+  createChar(5, bottomB);
+  createChar(6, bottomC);
+  createChar(7, bottomD);
 
   // Print rectA
   clear();
@@ -140,8 +210,17 @@ void LCD::drawRectangles() {
   cursorX++;
   cursorY--;
 
-  setCursor(0, 0);
+  setCursor(1, 0);
   write((uint8_t)4);
+
+  setCursor(0, 0);
+  write((uint8_t)5);
+
+  setCursor(1, 1);
+  write((uint8_t)6);
+
+  setCursor(0, 1);
+  write((uint8_t)7);
 }
 
 
@@ -253,9 +332,13 @@ void LCD::moveToPosition() {
 }
 
 
-void LCD::reset(){
-  for (int i = 0; i < 8; i++){
+void LCD::reset() {
+  for (int i = 0; i < 8; i++) {
     prevBottomA[i] = bottomA[i];
+    prevBottomB[i] = bottomB[i];
+    prevBottomC[i] = bottomC[i];
+    prevBottomD[i] = bottomD[i];
+
     rectA[i] = 0b00000;
     rectB[i] = 0b00000;
     rectC[i] = 0b00000;
@@ -285,16 +368,30 @@ void LCD::shiftDown() {
       rectD[i] = (rectD[i] << 1) | (rectC[i] >> 5);
     }
 
-    if (cursorX == 1) {
+    if (cursorX == 2) {
       for (int i = 0; i < 8; i++) {
         bottomA[i] = prevBottomA[i] | rectB[i];
-        if (((rectB[i] << 1) & prevBottomA[i]) != 0) {  // if we shift rectb down by one, then and it with prevBottomA, we can see if any bits match up. If so, there must be a collision.
+        bottomC[i] = prevBottomC[i] | rectD[i];
+
+        if ((((rectB[i] << 1) & prevBottomA[i]) != 0) || (((rectD[i] << 1) & prevBottomC[i]) != 0)) {  // if we shift rectb down by one, then and it with prevBottomA, we can see if any bits match up. If so, there must be a collision.
+          stopPiece = true;
+        }
+      }
+    } else if (cursorX == 1) {
+      for (int i = 0; i < 8; i++) {
+        bottomB[i] = prevBottomB[i] | rectB[i];
+        bottomD[i] = prevBottomD[i] | rectD[i];
+        
+        bottomA[i] = prevBottomA[i] | rectA[i];
+        bottomC[i] = prevBottomC[i] | rectC[i];
+
+        if ((((rectB[i] << 1) & prevBottomB[i]) != 0) || (((rectD[i] << 1) & prevBottomD[i]) != 0)) {  // if we shift rectb down by one, then and it with prevBottomA, we can see if any bits match up. If so, there must be a collision.
           stopPiece = true;
         }
       }
     }
 
-    if (stopPiece){
+    if (stopPiece) {
       reset();
     }
 
