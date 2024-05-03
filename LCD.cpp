@@ -1,5 +1,32 @@
 #include "LCD.h"
 #include "Sprites.h"
+
+
+// -------------------------------------------------- How it Works --------------------------------------------------
+// DESCRIPTION: A piece (e.g. the L piece) can be in at most four different character rectangles at once on the LCD.
+//              To be able to move the piece fluidly between character rectangles, I must modify these four bitmaps
+//              to then write to the LCD. On screen, these bitmaps are arranged as follows:
+//
+//                -----------------
+//               | rectA     rectC |  | When a piece reaches the bottom of the 'render' window (so either the bottom
+//               | rectB     rectD |  | of rectB or rectD), we set rectA equal to rectB, and rectC equal to rectD.
+//               |                 |  | RectB and rectD are then set to all 0's. Finally, we decrement cursorX by 1
+//               |                 |  V in order to move the window down.
+//               |                 |
+//               |                 | 
+//               |                 |
+//               |                 |
+//               |                 |
+//               |                 | 
+//               |                 |
+//               |                 |
+//               |                 |
+//               |                 |
+//               |                 |
+//               | bottomA bottomC |
+//               | bottomB bottomD |
+//                -----------------
+
 uint8_t rectA[8] = {
   0b00000,
   0b00000,
@@ -10,6 +37,7 @@ uint8_t rectA[8] = {
   0b00000,
   0b00000,
 };
+
 uint8_t rectB[8] = {
   0b00000,
   0b00000,
@@ -46,25 +74,25 @@ uint8_t rectD[8] = {
 //  rectB rectD
 
 uint8_t bottomA[8] = {
-  0b01000,
-  0b01000,
-  0b01000,
-  0b01000,
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
 };
 
 uint8_t prevBottomA[8] = {
-  0b01000,
-  0b01000,
-  0b01000,
-  0b01000,
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
+  0b10000,
 };
 
 
