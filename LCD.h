@@ -1,6 +1,8 @@
 #include <LiquidCrystal.h>
 #include "Arduino.h"
 #include "Enums.h"
+#include "Sprites.h"
+
 class LCD : public LiquidCrystal {
 public:
   LCD(uint8_t rs, uint8_t enable, uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3)
@@ -24,6 +26,8 @@ private:
   void drawRectangles();
   bool stopPiece = false;
   void reset();
+  int currentPieceIndex = 0;
+  Sprites sprite;
 };
 
 

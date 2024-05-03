@@ -1,6 +1,5 @@
 #include "LCD.h"
-#include "Sprites.h"
-
+#include <time.h> 
 
 // -------------------------------------------------- How it Works --------------------------------------------------
 // DESCRIPTION: A piece (e.g. the L piece) can be in at most four different character rectangles at once on the LCD.
@@ -163,10 +162,21 @@ uint8_t prevBottomD[8] = {
 };
 
 
-
+  uint8_t L_0[8] = {
+    0b00111,
+    0b00100,
+    0b00000,
+    0b00000,
+    0b00000,
+    0b00000,
+    0b00000,
+    0b00000,
+  };
 void LCD::configure() {
   begin(16, 2);
-  setPiece(L_0);
+  srand(time(0));
+  currentPieceIndex = rand() % 5;
+  setPiece(sprite.pieceTypes[currentPieceIndex]);
   createChar(0, rectA);
   clear();
   setCursor(cursorX, cursorY);
@@ -241,36 +251,36 @@ void LCD::setPiece(uint8_t _piece[]) {
 }
 
 void LCD::rotatePiece(DIRECTION direction) {
-  switch (direction) {
-    case DOWN:
-      {
-        setPiece(L_0);
-        moveToPosition();
-        break;
-      }
-    case UP:
-      {
-        setPiece(L_180);
-        moveToPosition();
-        break;
-      }
-    case LEFT:
-      {
-        setPiece(L_90);
-        moveToPosition();
-        break;
-      }
-    case RIGHT:
-      {
-        setPiece(L_270);
-        moveToPosition();
-        break;
-      }
-    default:
-      {
-        break;
-      }
-  }
+  // switch (direction) {
+  //   case DOWN:
+  //     {
+  //       setPiece(L_0);
+  //       moveToPosition();
+  //       break;
+  //     }
+  //   case UP:
+  //     {
+  //       setPiece(L_180);
+  //       moveToPosition();
+  //       break;
+  //     }
+  //   case LEFT:
+  //     {
+  //       setPiece(L_90);
+  //       moveToPosition();
+  //       break;
+  //     }
+  //   case RIGHT:
+  //     {
+  //       setPiece(L_270);
+  //       moveToPosition();
+  //       break;
+  //     }
+  //   default:
+  //     {
+  //       break;
+  //     }
+  // }
 }
 
 void LCD::moveToPosition() {
@@ -349,7 +359,8 @@ void LCD::reset() {
   downShifts = 0;
   rightShifts = 0;
 
-  setPiece(L_0);
+  currentPieceIndex = rand() % 5;
+  setPiece(sprite.pieceTypes[currentPieceIndex]);
   createChar(0, rectA);
   clear();
   setCursor(cursorX, cursorY);
