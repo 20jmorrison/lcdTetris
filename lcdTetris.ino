@@ -41,9 +41,17 @@
 #include "LCD.h"
 #include "protothreads.h"
 
+enum INPUT {
+  RIGHT,
+  LEFT,
+  DOWN,
+  ROTATE,
+  NONE
+}userInput;
 
 LCD lcd(RS, EN, D4, D5, D6, D7);
 pt ptMove;
+pt ptInput;
 
 int moveThread(struct pt* pt) {
   PT_BEGIN(pt);
@@ -51,6 +59,36 @@ int moveThread(struct pt* pt) {
   for (;;) {
     lcd.shiftDown();
     PT_SLEEP(pt, 500);
+  }
+  PT_END(pt);
+}
+
+int inputThread(struct pt* pt) {
+  PT_BEGIN(pt);
+  int right, left, down, rotate;
+  for (;;) {
+    right = !digitalRead(RIGHT_BTN); // These are input pullups, !'ing it is just to make the following code more readable 
+    left = !digitalRead(LEFT_BTN);
+    down = !digitalRead(DOWN_BTN);
+    rotate = !digitalRead(ROTATE_BTN);
+
+    if (right) { 
+      userInput = RIGHT;
+    }
+    else if (left) {
+      userInput = LEFT;
+    }
+    else if (down) {
+      userInput = DOWN;
+    }
+    else if (rotate) {
+      userInput = ROTATE;
+    }
+    else{
+      // User isn't pressing a button
+      userInput = NONE;
+    }
+    PT_SLEEP(pt, 100);
   }
   PT_END(pt);
 }
@@ -64,24 +102,53 @@ void setup() {
   pinMode(DOWN_BTN, INPUT_PULLUP);
   pinMode(ROTATE_BTN, INPUT_PULLUP);
 
+  userInput = NONE;
+
   lcd.configure();
 
   PT_INIT(&ptMove);
+  PT_INIT(&ptInput);
 }
+
 
 void loop() {
   PT_SCHEDULE(moveThread(&ptMove));
-  int leftVal = digitalRead(LEFT_BTN);
-  int rightVal = digitalRead(RIGHT_BTN);
+  PT_SCHEDULE(inputThread(&ptInput));
 
-  if(rightVal == 0){
-    lcd.shiftRight();
-    delay(100);
-  }
-  else if(leftVal == 0){
-    lcd.shiftLeft();
-    delay(100);
-  }
-
+  printInput();
 
 }
+
+
+void printInput(){
+  switch(userInput) {
+    case 0:{
+      Serial.println("RIGHT");
+      break;
+    }
+    case 1:{
+      Serial.println("LEFT");
+      break;
+    }
+    case 2:{
+      Serial.println("DOWN");
+      break;
+    }
+    case 3:{
+      Serial.println("ROTATE");
+      break;
+    }
+    case 4:{
+      Serial.println("NO INPUT");
+      break;
+    }
+    default:{
+      Serial.println("INPUT ERROR");
+      break;
+    }
+  }
+}
+
+
+
+
