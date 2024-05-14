@@ -1,5 +1,6 @@
 #include "LCD.h"
-#include <time.h> 
+#include <time.h>
+#include "Enums.h"
 
 // -------------------------------------------------- How it Works --------------------------------------------------
 // DESCRIPTION: A piece (e.g. the L piece) can be in at most four different character rectangles at once on the LCD.
@@ -162,16 +163,18 @@ uint8_t prevBottomD[8] = {
 };
 
 
-  uint8_t L_0[8] = {
-    0b00111,
-    0b00100,
-    0b00000,
-    0b00000,
-    0b00000,
-    0b00000,
-    0b00000,
-    0b00000,
-  };
+uint8_t L_0[8] = {
+  0b00111,
+  0b00100,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00000,
+};
+
+
 void LCD::configure() {
   begin(16, 2);
   srand(time(0));
@@ -184,6 +187,37 @@ void LCD::configure() {
   Serial.println("LCD CONFIGURED");
 }
 
+
+void LCD::move(Input _userInput) {
+  switch(_userInput) {
+    case 0:{
+      // Right
+      shiftRight();
+      break;
+    }
+    case 1:{
+      // Left
+      shiftLeft();
+      break;
+    }
+    case 2:{
+      // Down
+      shiftDown();
+      break;
+    }
+    case 3:{
+      // Rotate
+      break;
+    }
+    case 4:{
+      // No input
+      break;
+    }
+    default:{
+      break;
+    }
+  }
+}
 
 void LCD::drawRectangles() {
   createChar(0, rectA);
@@ -360,7 +394,7 @@ void LCD::shiftDown() {
       for (int i = 0; i < 8; i++) {
         bottomB[i] = prevBottomB[i] | rectB[i];
         bottomD[i] = prevBottomD[i] | rectD[i];
-        
+
         bottomA[i] = prevBottomA[i] | rectA[i];
         bottomC[i] = prevBottomC[i] | rectC[i];
 

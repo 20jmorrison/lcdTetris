@@ -1,6 +1,7 @@
 #include <LiquidCrystal.h>
 #include "Arduino.h"
 #include "Sprites.h"
+#include "Enums.h"
 
 class LCD : public LiquidCrystal {
 public:
@@ -8,22 +9,24 @@ public:
     : LiquidCrystal(rs, enable, d0, d1, d2, d3){};
   
   void configure();
-  void shiftDown();
-  void shiftLeft();
-  void shiftRight();
+  void move(Input _userInput);
 
 
 private:
-  int cursorX = 4;
-  int cursorY = 0;
   void swapRectangles(uint8_t _rectA[], uint8_t _rectB[]);
   void setPiece(uint8_t _piece[]);
-  int downShifts = 0;
-  int rightShifts = 0;
+  void shiftDown();
+  void shiftLeft();
+  void shiftRight();
+  void rotate();
   void moveToPosition();
   void drawRectangles();
-  bool stopPiece = false;
   void reset();
+  int cursorX = 4;
+  int cursorY = 0;
+  int downShifts = 0;
+  int rightShifts = 0;
+  bool stopPiece = false;
   int currentPieceIndex = 0;
   Sprites sprite;
 };

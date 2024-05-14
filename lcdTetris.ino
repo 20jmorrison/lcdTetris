@@ -38,18 +38,14 @@
 #define DOWN_BTN 17
 #define ROTATE_BTN 16
 
+#include "Enums.h"
 #include "LCD.h"
 #include "protothreads.h"
 
-enum INPUT {
-  RIGHT,
-  LEFT,
-  DOWN,
-  ROTATE,
-  NONE
-}userInput;
 
-LCD lcd(RS, EN, D4, D5, D6, D7);
+
+LCD gameManager(RS, EN, D4, D5, D6, D7);
+Input userInput;
 pt ptMove;
 pt ptInput;
 
@@ -57,7 +53,7 @@ int moveThread(struct pt* pt) {
   PT_BEGIN(pt);
 
   for (;;) {
-    lcd.shiftDown();
+    gameManager.move(DOWN);
     PT_SLEEP(pt, 500);
   }
   PT_END(pt);
@@ -88,6 +84,7 @@ int inputThread(struct pt* pt) {
       // User isn't pressing a button
       userInput = NONE;
     }
+    gameManager.move(userInput);
     PT_SLEEP(pt, 100);
   }
   PT_END(pt);
@@ -102,9 +99,7 @@ void setup() {
   pinMode(DOWN_BTN, INPUT_PULLUP);
   pinMode(ROTATE_BTN, INPUT_PULLUP);
 
-  userInput = NONE;
-
-  lcd.configure();
+  gameManager.configure();
 
   PT_INIT(&ptMove);
   PT_INIT(&ptInput);
@@ -116,6 +111,8 @@ void loop() {
   PT_SCHEDULE(inputThread(&ptInput));
 
   printInput();
+
+
 
 }
 
