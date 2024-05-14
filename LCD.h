@@ -1,6 +1,5 @@
 #include <LiquidCrystal.h>
 #include "Arduino.h"
-#include "Enums.h"
 #include "Sprites.h"
 
 class LCD : public LiquidCrystal {
@@ -12,7 +11,6 @@ public:
   void shiftDown();
   void shiftLeft();
   void shiftRight();
-  void rotatePiece(DIRECTION direction);
 
 
 private:

@@ -250,38 +250,6 @@ void LCD::setPiece(uint8_t _piece[]) {
   }
 }
 
-void LCD::rotatePiece(DIRECTION direction) {
-  // switch (direction) {
-  //   case DOWN:
-  //     {
-  //       setPiece(L_0);
-  //       moveToPosition();
-  //       break;
-  //     }
-  //   case UP:
-  //     {
-  //       setPiece(L_180);
-  //       moveToPosition();
-  //       break;
-  //     }
-  //   case LEFT:
-  //     {
-  //       setPiece(L_90);
-  //       moveToPosition();
-  //       break;
-  //     }
-  //   case RIGHT:
-  //     {
-  //       setPiece(L_270);
-  //       moveToPosition();
-  //       break;
-  //     }
-  //   default:
-  //     {
-  //       break;
-  //     }
-  // }
-}
 
 void LCD::moveToPosition() {
 
@@ -416,7 +384,6 @@ void LCD::shiftDown() {
         shouldSwitch = true;
       }
     }
-    Serial.println(1 & 8);
     if (shouldSwitch) {
       swapRectangles(rectA, rectB);
       swapRectangles(rectC, rectD);

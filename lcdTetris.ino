@@ -33,19 +33,17 @@
 #define D6 11
 #define D7 12
 
-#include "Joystick.h"
+#define LEFT_BTN 8
+#define RIGHT_BTN 7
+#define DOWN_BTN 17
+#define ROTATE_BTN 16
+
 #include "LCD.h"
-#include "Enums.h"
 #include "protothreads.h"
 
 
-
 LCD lcd(RS, EN, D4, D5, D6, D7);
-Joystick joystick;
-DIRECTION currDirection;
-BUTTON currButton;
 pt ptMove;
-pt ptJoystick;
 
 int moveThread(struct pt* pt) {
   PT_BEGIN(pt);
@@ -57,44 +55,33 @@ int moveThread(struct pt* pt) {
   PT_END(pt);
 }
 
-int joystickThread(struct pt* pt) {
-  PT_BEGIN(pt);
-
-  for (;;) {
-    currDirection = joystick.getJoystickDirection();
-    currButton = joystick.getJoystickButtons();
-    switch (currButton) {
-      case C:
-        {
-          lcd.shiftRight();
-          break;
-        }
-      case Z:
-        {
-          lcd.shiftLeft();
-          break;
-        }
-      default:
-        {
-          break;
-        }
-    }
-    lcd.rotatePiece(currDirection);
-    PT_SLEEP(pt, 50);
-  }
-  PT_END(pt);
-}
 
 void setup() {
   Serial.begin(BAUD);
+  
+  pinMode(LEFT_BTN, INPUT_PULLUP);
+  pinMode(RIGHT_BTN, INPUT_PULLUP);
+  pinMode(DOWN_BTN, INPUT_PULLUP);
+  pinMode(ROTATE_BTN, INPUT_PULLUP);
 
   lcd.configure();
-  joystick.configure();
 
   PT_INIT(&ptMove);
 }
 
 void loop() {
   PT_SCHEDULE(moveThread(&ptMove));
-  PT_SCHEDULE(joystickThread(&ptJoystick));
+  int leftVal = digitalRead(LEFT_BTN);
+  int rightVal = digitalRead(RIGHT_BTN);
+
+  if(rightVal == 0){
+    lcd.shiftRight();
+    delay(100);
+  }
+  else if(leftVal == 0){
+    lcd.shiftLeft();
+    delay(100);
+  }
+
+
 }
