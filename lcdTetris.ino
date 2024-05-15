@@ -54,7 +54,7 @@ int moveThread(struct pt* pt) {
 
   for (;;) {
     gameManager.move(DOWN);
-    PT_SLEEP(pt, 500);
+    PT_SLEEP(pt, 200);
   }
   PT_END(pt);
 }

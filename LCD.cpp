@@ -1,7 +1,6 @@
 #include "LCD.h"
-#include <time.h>
 #include "Enums.h"
-
+#include "Sprites.h"
 // -------------------------------------------------- How it Works --------------------------------------------------
 // DESCRIPTION: A piece (e.g. the L piece) can be in at most four different character rectangles at once on the LCD.
 //              To be able to move the piece fluidly between character rectangles, I must modify these four bitmaps
@@ -163,23 +162,18 @@ uint8_t prevBottomD[8] = {
 };
 
 
-uint8_t L_0[8] = {
-  0b00111,
-  0b00100,
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00000,
-};
-
-
 void LCD::configure() {
   begin(16, 2);
-  srand(time(0));
-  currentPieceIndex = rand() % 5;
-  setPiece(sprite.pieceTypes[currentPieceIndex]);
+  randomSeed(analogRead(0));
+  currentPiece = random(0, 5);
+  for(int i = 0; i < 8; i++){
+    spriteList[0][i] = Square[i];
+    spriteList[1][i] = pipe[0][i];
+    spriteList[2][i] = zig[0][i];
+    spriteList[3][i] = t[0][i];
+    spriteList[4][i] = l[0][i];
+  }
+  setPiece(spriteList[currentPiece]);
   createChar(0, rectA);
   clear();
   setCursor(cursorX, cursorY);
@@ -207,6 +201,7 @@ void LCD::move(Input _userInput) {
     }
     case 3:{
       // Rotate
+      rotate();
       break;
     }
     case 4:{
@@ -218,6 +213,40 @@ void LCD::move(Input _userInput) {
     }
   }
 }
+
+
+void LCD::rotate(){
+  switch (currentPiece){
+    case SQUARE:{
+      // No rotation to be done for a square
+      break;
+    }
+    case PIPE:{
+      currentRotationIndex = (currentRotationIndex >= 1) ? 0 : 1; // Pipe only has two different rotations
+      setPiece(pipe[currentRotationIndex]);
+      break;
+    }
+    case ZIG:{
+      currentRotationIndex = (currentRotationIndex >= 1) ? 0 : 1; // Zig only has two different rotations
+      setPiece(zig[currentRotationIndex]);
+      break;    
+    }
+    case T:{
+      currentRotationIndex = (currentRotationIndex >= 3) ? 0 : currentRotationIndex + 1; // T has four different rotations
+      setPiece(t[currentRotationIndex]);
+      break;
+    }
+    case L:{
+      currentRotationIndex = (currentRotationIndex >= 3) ? 0 : currentRotationIndex + 1; // L has four different rotations
+      setPiece(l[currentRotationIndex]);
+      break;
+    }
+    default:{
+      break;
+    }
+  }
+}
+
 
 void LCD::drawRectangles() {
   createChar(0, rectA);
@@ -282,6 +311,7 @@ void LCD::setPiece(uint8_t _piece[]) {
     rectC[i] = 0b00000;
     rectD[i] = 0b00000;
   }
+  moveToPosition();
 }
 
 
@@ -361,8 +391,8 @@ void LCD::reset() {
   downShifts = 0;
   rightShifts = 0;
 
-  currentPieceIndex = rand() % 5;
-  setPiece(sprite.pieceTypes[currentPieceIndex]);
+  currentPiece = random(0, 5);
+  setPiece(spriteList[currentPiece]);
   createChar(0, rectA);
   clear();
   setCursor(cursorX, cursorY);

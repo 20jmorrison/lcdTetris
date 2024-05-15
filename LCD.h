@@ -1,6 +1,5 @@
 #include <LiquidCrystal.h>
 #include "Arduino.h"
-#include "Sprites.h"
 #include "Enums.h"
 
 class LCD : public LiquidCrystal {
@@ -27,8 +26,9 @@ private:
   int downShifts = 0;
   int rightShifts = 0;
   bool stopPiece = false;
-  int currentPieceIndex = 0;
-  Sprites sprite;
+  int currentRotationIndex = 0;
+  uint8_t spriteList[5][8];
+  Piece currentPiece = SQUARE;
 };
 
 

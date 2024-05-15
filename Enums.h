@@ -9,4 +9,12 @@ enum Input {
   NONE
 };
 
+enum Piece {
+  SQUARE,
+  PIPE,
+  ZIG,
+  T,
+  L
+};
+
 #endif
