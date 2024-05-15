@@ -184,27 +184,23 @@ void LCD::configure() {
 
 void LCD::move(Input _userInput) {
   switch(_userInput) {
-    case 0:{
-      // Right
+    case RIGHT:{
       shiftRight();
       break;
     }
-    case 1:{
-      // Left
+    case LEFT:{
       shiftLeft();
       break;
     }
-    case 2:{
-      // Down
+    case DOWN:{
       shiftDown();
       break;
     }
-    case 3:{
-      // Rotate
+    case ROTATE:{
       rotate();
       break;
     }
-    case 4:{
+    case NONE:{
       // No input
       break;
     }
