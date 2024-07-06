@@ -63,24 +63,20 @@ int inputThread(struct pt* pt) {
   PT_BEGIN(pt);
   int right, left, down, rotate;
   for (;;) {
-    right = !digitalRead(RIGHT_BTN); // These are input pullups, !'ing it is just to make the following code more readable 
+    right = !digitalRead(RIGHT_BTN);  // These are input pullups, !'ing it is just to make the following code more readable
     left = !digitalRead(LEFT_BTN);
     down = !digitalRead(DOWN_BTN);
     rotate = !digitalRead(ROTATE_BTN);
 
-    if (right) { 
+    if (right) {
       userInput = RIGHT;
-    }
-    else if (left) {
+    } else if (left) {
       userInput = LEFT;
-    }
-    else if (down) {
+    } else if (down) {
       userInput = DOWN;
-    }
-    else if (rotate) {
+    } else if (rotate) {
       userInput = ROTATE;
-    }
-    else{
+    } else {
       // User isn't pressing a button
       userInput = NONE;
     }
@@ -93,59 +89,55 @@ int inputThread(struct pt* pt) {
 
 void setup() {
   Serial.begin(BAUD);
-  
+
   pinMode(LEFT_BTN, INPUT_PULLUP);
   pinMode(RIGHT_BTN, INPUT_PULLUP);
   pinMode(DOWN_BTN, INPUT_PULLUP);
   pinMode(ROTATE_BTN, INPUT_PULLUP);
 
   gameManager.configure();
-
+    
   PT_INIT(&ptMove);
   PT_INIT(&ptInput);
 }
 
-
 void loop() {
   PT_SCHEDULE(moveThread(&ptMove));
   PT_SCHEDULE(inputThread(&ptInput));
-
-  printInput();
-
-
-
 }
 
 
-void printInput(){
-  switch(userInput) {
-    case 0:{
-      Serial.println("RIGHT");
-      break;
-    }
-    case 1:{
-      Serial.println("LEFT");
-      break;
-    }
-    case 2:{
-      Serial.println("DOWN");
-      break;
-    }
-    case 3:{
-      Serial.println("ROTATE");
-      break;
-    }
-    case 4:{
-      Serial.println("NO INPUT");
-      break;
-    }
-    default:{
-      Serial.println("INPUT ERROR");
-      break;
-    }
+void printInput() {
+  switch (userInput) {
+    case 0:
+      {
+        Serial.println("RIGHT");
+        break;
+      }
+    case 1:
+      {
+        Serial.println("LEFT");
+        break;
+      }
+    case 2:
+      {
+        Serial.println("DOWN");
+        break;
+      }
+    case 3:
+      {
+        Serial.println("ROTATE");
+        break;
+      }
+    case 4:
+      {
+        Serial.println("NO INPUT");
+        break;
+      }
+    default:
+      {
+        Serial.println("INPUT ERROR");
+        break;
+      }
   }
 }
-
-
-
-

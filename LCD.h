@@ -21,6 +21,7 @@ private:
   void moveToPosition();
   void drawRectangles();
   void reset();
+  void checkForLine();
   int cursorX = 4;
   int cursorY = 0;
   int downShifts = 0;

@@ -87,12 +87,12 @@ uint8_t bottomA[8] = {
 uint8_t bottomB[8] = {
   0b10000,
   0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
+  0b11000,
+  0b11000,
+  0b11000,
+  0b11000,
+  0b11000,
+  0b11000,
 };
 
 uint8_t bottomC[8] = {
@@ -102,19 +102,19 @@ uint8_t bottomC[8] = {
   0b00000,
   0b00000,
   0b00000,
-  0b00000,
-  0b00000,
+  0b10000,
+  0b10000,
 };
 
 uint8_t bottomD[8] = {
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
+  0b11000,
+  0b11000,
+  0b11000,
+  0b11000,
+  0b11000,
+  0b11000,
+  0b11111,
+  0b11111,
 };
 
 uint8_t prevBottomA[8] = {
@@ -131,12 +131,12 @@ uint8_t prevBottomA[8] = {
 uint8_t prevBottomB[8] = {
   0b10000,
   0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
+  0b11000,
+  0b11000,
+  0b11000,
+  0b11000,
+  0b11000,
+  0b11000,
 };
 
 uint8_t prevBottomC[8] = {
@@ -146,19 +146,19 @@ uint8_t prevBottomC[8] = {
   0b00000,
   0b00000,
   0b00000,
-  0b00000,
-  0b00000,
+  0b10000,
+  0b10000,
 };
 
 uint8_t prevBottomD[8] = {
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
-  0b10000,
+  0b11000,
+  0b11000,
+  0b11000,
+  0b11000,
+  0b11000,
+  0b11000,
+  0b11111,
+  0b11111,
 };
 
 
@@ -166,7 +166,7 @@ void LCD::configure() {
   begin(16, 2);
   randomSeed(analogRead(0));
   currentPiece = random(0, 5);
-  for(int i = 0; i < 8; i++){
+  for (int i = 0; i < 8; i++) {
     spriteList[0][i] = Square[i];
     spriteList[1][i] = pipe[0][i];
     spriteList[2][i] = zig[0][i];
@@ -183,63 +183,75 @@ void LCD::configure() {
 
 
 void LCD::move(Input _userInput) {
-  switch(_userInput) {
-    case RIGHT:{
-      shiftRight();
-      break;
-    }
-    case LEFT:{
-      shiftLeft();
-      break;
-    }
-    case DOWN:{
-      shiftDown();
-      break;
-    }
-    case ROTATE:{
-      rotate();
-      break;
-    }
-    case NONE:{
-      // No input
-      break;
-    }
-    default:{
-      break;
-    }
+  switch (_userInput) {
+    case RIGHT:
+      {
+        shiftRight();
+        break;
+      }
+    case LEFT:
+      {
+        shiftLeft();
+        break;
+      }
+    case DOWN:
+      {
+        shiftDown();
+        break;
+      }
+    case ROTATE:
+      {
+        rotate();
+        break;
+      }
+    case NONE:
+      {
+        // No input
+        break;
+      }
+    default:
+      {
+        break;
+      }
   }
 }
 
 
-void LCD::rotate(){
-  switch (currentPiece){
-    case SQUARE:{
-      // No rotation to be done for a square
-      break;
-    }
-    case PIPE:{
-      currentRotationIndex = (currentRotationIndex >= 1) ? 0 : 1; // Pipe only has two different rotations
-      setPiece(pipe[currentRotationIndex]);
-      break;
-    }
-    case ZIG:{
-      currentRotationIndex = (currentRotationIndex >= 1) ? 0 : 1; // Zig only has two different rotations
-      setPiece(zig[currentRotationIndex]);
-      break;    
-    }
-    case T:{
-      currentRotationIndex = (currentRotationIndex >= 3) ? 0 : currentRotationIndex + 1; // T has four different rotations
-      setPiece(t[currentRotationIndex]);
-      break;
-    }
-    case L:{
-      currentRotationIndex = (currentRotationIndex >= 3) ? 0 : currentRotationIndex + 1; // L has four different rotations
-      setPiece(l[currentRotationIndex]);
-      break;
-    }
-    default:{
-      break;
-    }
+void LCD::rotate() {
+  switch (currentPiece) {
+    case SQUARE:
+      {
+        // No rotation to be done for a square
+        break;
+      }
+    case PIPE:
+      {
+        currentRotationIndex = (currentRotationIndex >= 1) ? 0 : 1;  // Pipe only has two different rotations
+        setPiece(pipe[currentRotationIndex]);
+        break;
+      }
+    case ZIG:
+      {
+        currentRotationIndex = (currentRotationIndex >= 1) ? 0 : 1;  // Zig only has two different rotations
+        setPiece(zig[currentRotationIndex]);
+        break;
+      }
+    case T:
+      {
+        currentRotationIndex = (currentRotationIndex >= 3) ? 0 : currentRotationIndex + 1;  // T has four different rotations
+        setPiece(t[currentRotationIndex]);
+        break;
+      }
+    case L:
+      {
+        currentRotationIndex = (currentRotationIndex >= 3) ? 0 : currentRotationIndex + 1;  // L has four different rotations
+        setPiece(l[currentRotationIndex]);
+        break;
+      }
+    default:
+      {
+        break;
+      }
   }
 }
 
@@ -370,7 +382,94 @@ void LCD::moveToPosition() {
 }
 
 
+void LCD::checkForLine() {
+  
+  //------- For bottomA and bottomC ----------
+  for (int i = 0; i < 5; i++) {  // iterate through height
+    int line[16];
+    for (int j = 0; j < 8; j++) {  // iterate through width
+      line[j] = bottomA[j] >> i & 1;
+      line[8 + j] = bottomC[j] >> i & 1;
+    }
+
+    bool foundLine = true;
+    for (int k = 0; k < 16; k++) {
+      if (line[k] != 1) {
+        foundLine = false;
+        break;
+      }
+    }
+
+    if (foundLine) {
+      uint8_t mask = 0b11111;
+      uint8_t partToKeep;
+      uint8_t shifted;
+      for (int k = 0; k < 8; k++) {
+        mask = 0b11111;
+        mask = (mask << i + 1) & 0b11111;
+        partToKeep = mask & bottomA[k];
+        mask = ~mask;
+        shifted = (bottomA[k] << 1) & mask;
+        bottomA[k] = partToKeep | shifted;
+
+        mask = 0b11111;
+        mask = (mask << i + 1) & 0b11111;
+        partToKeep = mask & bottomC[k];
+        mask = ~mask;
+        shifted = (bottomC[k] << 1) & mask;
+        bottomC[k] = partToKeep | shifted;
+      }
+      break;
+    }
+  }
+
+  //------- For bottomB and bottomD ----------
+  for (int i = 0; i < 4; i++) {  // iterate through height
+    int line[16];
+    for (int j = 0; j < 8; j++) {  // iterate through width
+      line[j] = bottomB[j] >> i & 1;
+      line[8 + j] = bottomD[j] >> i & 1;
+    }
+
+    bool foundLine = true;
+    for (int k = 0; k < 16; k++) {
+      if (line[k] != 1) {
+        foundLine = false;
+        break;
+      }
+    }
+
+    if (foundLine) {
+      uint8_t mask = 0b11111;
+      uint8_t partToKeep;
+      uint8_t shifted;
+      for (int k = 0; k < 8; k++) {
+        mask = 0b11111;
+        mask = (mask << i + 1) & 0b11111;
+        partToKeep = mask & bottomB[k];
+        mask = ~mask;
+        shifted = (bottomB[k] << 1) & mask;
+        bottomB[k] = partToKeep | shifted;
+        bottomB[k] = bottomB[k] | (bottomA[k] >> 4);
+        bottomA[k] = bottomA[k] << 1;
+
+        mask = 0b11111;
+        mask = (mask << i + 1) & 0b11111;
+        partToKeep = mask & bottomD[k];
+        mask = ~mask;
+        shifted = (bottomD[k] << 1) & mask;
+        bottomD[k] = partToKeep | shifted;
+        bottomD[k] = bottomD[k] | (bottomC[k] >> 4);
+        bottomC[k] = bottomC[k] << 1;
+      }
+      break;
+    }
+  }
+}
+
+
 void LCD::reset() {
+  checkForLine();
   for (int i = 0; i < 8; i++) {
     prevBottomA[i] = bottomA[i];
     prevBottomB[i] = bottomB[i];
